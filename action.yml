@@ -1,0 +1,52 @@
+name: 'Python verify action'
+description: 'Build, analyze and test python code'
+
+inputs:
+  python-version:
+    description: 'Python version'
+    required: false
+    default: '3.9'
+  coverage-threshold:
+    description: 'Minimum coverage threshold'
+    required: false
+    default: '100'
+  add-coverage-comment:
+    description: 'Should add PR comment with coverage summary?'
+    required: false
+    default: 'true'
+
+outputs:
+  coverage:
+    description: 'Coverage percentage'
+    value: ${{ steps.coverage-gate.outputs.coverage }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python 3
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .
+    - name: Lint with mypy and flake8
+      run: |
+        pip install mypy flake8
+        mypy
+        flake8
+    - name: Test with pytest and coverage
+      run: |
+        pip install pytest coverage
+        coverage run -m pytest
+    - if: ${{ inputs.add-coverage-comment == 'true' }}
+      name: Coverage comment
+      uses: py-cov-action/python-coverage-comment-action@v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Enforce minimum coverage
+      id: coverage-gate
+      run: |
+        echo "coverage=$(coverage report --format=total)" >> $GITHUB_OUTPUT
+        coverage report --show-missing --fail-under=${{ inputs.coverage-threshold }}
