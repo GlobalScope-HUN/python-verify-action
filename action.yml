@@ -31,15 +31,18 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
     - name: Install dependencies
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install .
     - name: Lint with mypy and flake8
+      shell: bash
       run: |
         pip install mypy flake8
         mypy
         flake8
     - name: Test with pytest and coverage
+      shell: bash
       run: |
         pip install pytest coverage
         coverage run -m pytest
@@ -47,9 +50,10 @@ runs:
       name: Coverage comment
       uses: py-cov-action/python-coverage-comment-action@v3
       with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
     - name: Enforce minimum coverage
       id: coverage-gate
+      shell: bash
       run: |
         echo "coverage=$(coverage report --format=total)" >> $GITHUB_OUTPUT
         coverage report --show-missing --fail-under=${{ inputs.coverage-threshold }}

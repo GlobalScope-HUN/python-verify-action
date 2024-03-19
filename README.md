@@ -25,7 +25,7 @@ Python code quality gate: build, analyze and test python code
 ```yaml
       - uses: actions/checkout@v4
       - id: quality-gate
-        uses: actions/python-verify-action@v1
+        uses: GlobalScope-HUN/python-verify-action@v1
         with:
           python-version: '3.12'
           coverage-threshold: '95'
