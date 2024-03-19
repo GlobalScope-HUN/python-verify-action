@@ -1,5 +1,8 @@
 name: 'Python verify action'
 description: 'Build, analyze and test python code'
+branding:
+  icon: 'check-circle'
+  color: 'green'
 
 inputs:
   python-version:
