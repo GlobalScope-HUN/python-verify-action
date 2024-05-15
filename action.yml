@@ -39,7 +39,7 @@ runs:
       shell: bash
       run: |
         pip install mypy flake8
-        mypy --install-types
+        mypy --install-types --non-interactive || true
         mypy
         flake8
     - name: Test with pytest and coverage
